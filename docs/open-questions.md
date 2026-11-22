@@ -4,15 +4,15 @@ Things to settle between the maintainers before building. Each answer will becom
 
 ## Operations and governance
 
-1. **Who runs the core?** An existing campaign database becomes the core, or shared neutral infrastructure, or another option. Who holds backups and production access?
+1. **Who runs the core?** Proposed: a small dedicated server with equal admin access for the maintainers involved. Who holds backups and production access?
 2. **Campaign admins:** who moderates (merges, voiding, bans), and how are decisions logged and reviewed?
 3. **Release process:** how are API changes and rule changes agreed and rolled out?
 
 ## Existing campaign
 
-4. **Continuity:** does the shared campaign continue the current round and turn count and the existing standings, or start a new season?
-5. **Phase 1 timing:** when can the `players`/`identities` tables be added to the existing database?
-6. **Protocol library:** can the legacy LoC campaign protocol (codec and command types) be shared between the Insignia and Steelbound gateways, for example as a separately licensed crate? Today it lives in an unlicensed repository, so this needs the author's decision.
+4. **Fork and license:** is the `sbcampaign` author fine with a fork, and which license should `sbcampaign` get? Or would the author rather have the new parts contributed directly to `sbcampaign`?
+5. **Keeping in sync:** how do fork and upstream exchange fixes (pull requests, a shared branch, regular merges)?
+6. **Continuity:** does the Steelbound campaign start as a new season? And if the Insignia campaign is connected later, do they merge standings or start a joint new season?
 
 ## Identity and linking
 

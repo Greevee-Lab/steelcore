@@ -10,7 +10,9 @@ It is **not** crossplay. Matches stay on each platform. Only campaign progress i
 
 ## Built on what already runs
 
-The LoC campaign is already back. `sbcampaign` has decoded the campaign protocol, rebuilt the campaign rules, clock and database, and runs a live campaign on Insignia. steelcore does not replace that work. It **moves that proven campaign logic behind one API** and adds what sharing needs: identities, account linking, per-provider trust and a read API. The overview marks every part as *exists*, *in development* or *new*.
+The LoC campaign is already back. `sbcampaign` has decoded the campaign protocol, rebuilt the campaign rules, clock and database, and runs a live campaign on Insignia. steelcore does not replace that work. The proposal is to build on a **fork of `sbcampaign`** (only with its author's agreement), **move that proven campaign logic behind one API** and add what sharing needs: identities, account linking, per-provider trust and a read API.
+
+**Steelbound connects first.** The Insignia campaign keeps running as it is; connecting it later is an option, not a requirement. The overview marks every part as *exists*, *in development*, *new* or *future option*.
 
 ## Status
 
@@ -28,10 +30,10 @@ The LoC campaign is already back. `sbcampaign` has decoded the campaign protocol
 ## The idea in five sentences
 
 1. **steelcore** owns the campaign database and the campaign clock, and is the only component that touches campaign data.
-2. Every provider (Insignia, Steelbound, Brainbox, …) runs a **gateway** that authenticates its own users and talks to steelcore through a versioned **Core API**.
+2. Every provider runs a **gateway** that authenticates its own users and talks to steelcore through a versioned **Core API**. Steelbound comes first; Insignia, Brainbox and others can follow.
 3. Every provider account is an **identity** that belongs to one campaign **player**. Pilot, garage and stats belong to the player.
 4. Players can **link** accounts from different providers with a short-lived code, so the same pilot works on every client.
-5. Existing campaign data keeps its keys, so the current campaign can migrate step by step.
+5. The core keeps the existing data model and keys, so campaigns can be joined later step by step.
 
 ## Contributing
 

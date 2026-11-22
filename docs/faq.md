@@ -6,9 +6,9 @@ Questions that came up while discussing the concept, with short answers. Questio
 
 ### Does the Insignia part work at all?
 
-**Technically yes, and most of it already exists.**
+**Technically yes, but it is a possible later step, not part of the start.** Steelbound connects first, and the Insignia campaign keeps running as it is. If both sides want to connect it later:
 
-- The Insignia gateway is essentially today's `sbcampaign`. Insignia already routes the LoC campaign traffic to it. Becoming a gateway is an internal change: instead of writing to its own database, it calls the Core API. Nothing changes for Insignia.
+- The existing `sbcampaign` server could act as the Insignia gateway. Insignia already routes the LoC campaign traffic to it. Connecting would be an internal change: instead of writing to its own database, it calls the Core API. Nothing changes for Insignia.
 - A personal link code in the message of the day is a small change. The game requests that message after the XUID handshake on the same connection, so the server already knows who is asking. The message is UTF-16 and multi-line text already works.
 
 Two things are still open:
@@ -23,10 +23,14 @@ Two things are still open:
 | | Original Xbox | Steelbound |
 |---|---|---|
 | Network, accounts, sign-in | Insignia | steelnet |
-| Speaks the campaign protocol with the game | `sbcampaign` (Insignia gateway) | Steelbound gateway |
+| Speaks the campaign protocol with the game | `sbcampaign` (could become the Insignia gateway later) | Steelbound gateway |
 | Shared campaign state | steelcore | steelcore |
 
 steelnet already has lobbies, relays and pilot accounts with a cryptographic sign-in, so it already is Steelbound's identity provider. The gateway adds the campaign protocol and translates it to the Core API. Details are in [concept 8.1](concept.md#81-example-the-steelbound-gateway-inside-steelnet).
+
+### Why fork sbcampaign instead of writing a new server?
+
+Because the hard part already exists and runs: the decoded protocol, the campaign rules, the clock and the database. A fork keeps all of that, keeps the history and the visible link to the original, and lets fixes flow both ways. It only happens with the author's agreement and a license, because the code currently has none. See [ADR-0006](adr/0006-fork-sbcampaign.md).
 
 ### Why not just share one database between all servers?
 
@@ -44,7 +48,7 @@ No. Matches stay on each platform: Insignia players play with Insignia players, 
 
 ### What happens to my existing Insignia progress?
 
-It stays where it is. The existing account keys are reused as campaign player ids, so no campaign data has to move ([ADR-0002](adr/0002-player-id-from-existing-uuid.md)). Whether the shared campaign continues the current round or starts a new season is still [open](open-questions.md).
+Nothing happens to it. The Insignia campaign keeps running as it is. If it is connected to steelcore later, the existing account keys can be reused as campaign player ids, so no campaign data has to be rewritten ([ADR-0002](adr/0002-player-id-from-existing-uuid.md)). Whether a joined campaign would continue the current round or start a new season is still [open](open-questions.md).
 
 ### Do I have to link my accounts?
 

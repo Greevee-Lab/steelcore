@@ -9,3 +9,4 @@ Short records of important decisions: context, decision, consequences. New decis
 | [0003](0003-account-linking.md) | Account linking by link code, admin merge as fallback | Proposed |
 | [0004](0004-single-campaign-clock.md) | Exactly one campaign clock, inside the core | Proposed |
 | [0005](0005-license-agpl.md) | License steelcore under AGPL-3.0 | Accepted |
+| [0006](0006-fork-sbcampaign.md) | Build the core on a fork of sbcampaign | Proposed |
