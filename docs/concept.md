@@ -245,7 +245,7 @@ Every transition is published as an **event**, so gateways can refresh caches an
 | Gateway | Client protocol | Authentication | Operated by |
 |---|---|---|---|
 | **Insignia** | Original LoC campaign protocol (TCP) | Insignia authenticates the connection; the game reports its XUID (see [4.1](#41-link-code-default)) | Insignia campaign maintainer |
-| **Steelbound** | Original LoC campaign protocol, redirected to the Steelbound online service | Steelbound account token | Steelbound |
+| **Steelbound** | Original LoC campaign protocol, redirected to steelnet (Steelbound's online service) | steelnet account, verified by challenge-response (see [8.1](#81-example-the-steelbound-gateway-inside-steelnet)) | Steelbound |
 | **Brainbox** | Its choice: original protocol or a modern API | Brainbox account | Brainbox |
 | **Read API** | HTTP/JSON, read-only | none or API key | core operator |
 
@@ -253,6 +253,56 @@ Notes:
 
 - The Insignia and Steelbound gateways speak the **same legacy protocol**. A shared protocol library (codec plus command types) would save both sides work. Whether and how that's possible depends on licensing, see [open questions](open-questions.md).
 - The original game expects an **XUID** in places, even when it runs outside Xbox Live. Non-Insignia gateways hand the game a **stable, provider-scoped pseudo-XUID** from a reserved range that cannot collide with real XUIDs. The core never relies on it. Its key is always the `identity_id`.
+
+### 8.1 Example: the Steelbound gateway inside steelnet
+
+A gateway is not a separate platform. It is the piece of a provider's existing online service that speaks the campaign. Steelbound shows how that fits together:
+
+| | Original Xbox | Steelbound |
+|---|---|---|
+| Network, accounts, sign-in | **Insignia** | **steelnet** (exists today) |
+| Speaks the campaign protocol with the game | `sbcampaign`, which becomes the Insignia gateway | **Steelbound gateway**, a new part of steelnet |
+| Shared campaign state | steelcore | steelcore |
+
+**What steelnet already provides:** lobbies, NAT traversal help and relays for Steelbound's peer-to-peer matches, plus **pilot accounts**. Each account has an id and a unique pilot name and can be secured with Discord or a login. The game itself only receives a short-lived game key, never the account key, and signs in by challenge-response. So steelnet already is Steelbound's **identity provider**. In steelcore a Steelbound player is simply the identity `(steelbound, <steelnet account id>)`.
+
+**What the gateway adds:**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant G as LoC in Steelbound
+    participant SG as Steelbound gateway (steelnet)
+    participant C as steelcore
+
+    G->>SG: campaign connection (redirected by Steelbound, encrypted)
+    SG->>G: challenge
+    G->>SG: proof with short-lived game key
+    SG->>C: ResolveIdentity(steelbound, account id)
+    C-->>SG: player, pilot, faction
+    SG-->>G: Accept (game gets a pseudo-XUID for this account)
+    loop every campaign command
+        G->>SG: legacy command, e.g. AddUserPoint
+        SG->>C: matching Core API call, e.g. ReportUserPoints
+        C-->>SG: result
+        SG-->>G: legacy response
+    end
+```
+
+1. Steelbound redirects the game's campaign connection to the gateway. The connection is encrypted and signed in with the game key the launcher already hands out.
+2. The gateway speaks the **original LoC campaign protocol** with the game, the same protocol `sbcampaign` speaks on Insignia.
+3. For every command it calls the **Core API** with its own gateway credentials, acting for the signed-in account.
+4. It **ignores the XUID the game reports.** The game gets a stable pseudo-XUID derived from the account.
+
+**Why this matters for linking:** steelnet checks the sign-in cryptographically, so the gateway knows for certain which account is connected. That makes the Steelbound side the stronger half of a link (compare [4.1](#41-link-code-default)). The Steelbound launcher is also the natural place to redeem a link code shown on the Xbox, and steelnet already uses redeemable codes for account recovery.
+
+**Still to work out:**
+
+- **Pilot names.** steelnet names are unique within steelnet only. Once steelcore requires campaign-wide unique names, a steelnet name can collide with an existing Insignia pilot. steelcore needs one rule for that, for example reserving names in the core and letting the player pick a different campaign name on conflict.
+- **Redirect.** How the game finds its campaign server, and the cleanest way for Steelbound to point it at the gateway.
+- **Placement.** The gateway is lightweight and runs next to the other steelnet services. The core itself is meant to run separately (see [operations](#10-operations-open)).
+
+Other providers can follow the same pattern: keep your own accounts and sign-in, add a gateway that translates your client's protocol to the Core API.
 
 ---
 

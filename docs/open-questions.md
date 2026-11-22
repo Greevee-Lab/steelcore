@@ -20,16 +20,17 @@ Things to settle between the maintainers before building. Each answer will becom
 8. **Authenticated XUID:** the game reports its own XUID. Can Insignia confirm to the campaign server which user is actually connected (for example via connection metadata), so a modified console cannot claim someone else's XUID?
 9. **Insignia's consent:** is the Insignia project fine with linking Insignia XUIDs to accounts at other services, and with an Insignia campaign that is shared with PC clients? Does Insignia offer account verification or OAuth that a gateway could use?
 10. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients so it can never collide with real XUIDs?
-11. **Pilot names:** how are existing duplicate pilot names (if any) resolved when names become unique campaign-wide?
+11. **Pilot names:** how are existing duplicate pilot names (if any) resolved when names become unique campaign-wide? And what happens when a provider's own account name (for example a steelnet pilot name) is already taken by a pilot from another provider?
+12. **Campaign server redirect:** how does the game find its campaign server address, and how should non-Xbox clients point it at their gateway?
 
 ## Game data
 
-12. **Pilot blob:** is the format identical across US, EU and JP versions? Which fields would a native port need to produce?
-13. **Stats:** what do `stat1`–`stat10` mean exactly? Plausibility checks need real limits per mission.
-14. **Trust:** which reported values can a malicious client inflate, and which can be cross-checked (for example both teams reporting the same match)?
+13. **Pilot blob:** is the format identical across US, EU and JP versions? Which fields would a native port need to produce?
+14. **Stats:** what do `stat1`–`stat10` mean exactly? Plausibility checks need real limits per mission.
+15. **Trust:** which reported values can a malicious client inflate, and which can be cross-checked (for example both teams reporting the same match)?
 
 ## Technology
 
-15. **API transport:** gRPC (proposed) or HTTP/JSON with OpenAPI for gateways?
-16. **Language:** the core in Rust (matches the existing server and makes reuse easy), or another language?
-17. **Events:** gRPC streams, webhooks, or PostgreSQL `LISTEN/NOTIFY` behind the API?
+16. **API transport:** gRPC (proposed) or HTTP/JSON with OpenAPI for gateways?
+17. **Language:** the core in Rust (matches the existing server and makes reuse easy), or another language?
+18. **Events:** gRPC streams, webhooks, or PostgreSQL `LISTEN/NOTIFY` behind the API?
