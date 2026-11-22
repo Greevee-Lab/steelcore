@@ -4,7 +4,7 @@
 
 ## Context
 
-The LoC campaign advances on a schedule: shop drops during a turn, then at turn end restocking, turn awards, the next turn and faction resets (turn 3 and 5), and at round end round awards and a new round. If more than one service did this, awards would be granted twice and turns would drift apart.
+The LoC campaign advances on a schedule: shop drops during a turn, then at turn end restocking, turn awards, the next turn and faction resets (turn 3 and 5), and at round end round awards and a new round. `sbcampaign`'s service task already implements this cycle and runs it every week. The question is only where it lives once several providers share the campaign. If more than one service did this, awards would be granted twice and turns would drift apart.
 
 ## Decision
 

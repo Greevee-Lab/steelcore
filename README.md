@@ -8,9 +8,13 @@ It is **not** crossplay. Matches stay on each platform. Only campaign progress i
 
 ![steelcore overview](docs/diagrams/overview.svg)
 
+## Built on what already runs
+
+The LoC campaign is already back. `sbcampaign` has decoded the campaign protocol, rebuilt the campaign rules, clock and database, and runs a live campaign on Insignia. steelcore does not replace that work. It **moves that proven campaign logic behind one API** and adds what sharing needs: identities, account linking, per-provider trust and a read API. The overview marks every part as *exists*, *in development* or *new*.
+
 ## Status
 
-**Concept / draft for discussion.** There is no code yet. We want to agree on the architecture with the people who run LoC campaign servers and build LoC clients first.
+**Concept / draft for discussion.** steelcore itself has no code yet. We want to agree on the architecture with the people who run LoC campaign servers and build LoC clients first.
 
 ## Documents
 

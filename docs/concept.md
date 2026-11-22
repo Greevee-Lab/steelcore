@@ -13,9 +13,9 @@ There will soon be several ways to play Line of Contact online:
 
 | Client | How it runs | Online today |
 |---|---|---|
-| Original Xbox (hardware or emulator) | Original game, online via **Insignia** | Campaign via `sbcampaign` |
-| **Steelbound** | Original game in a compatibility layer on PC | Free play (P2P + relays); no campaign yet |
-| **Project Brainbox** | Native PC port (new engine) | Planned |
+| Original Xbox (hardware or emulator) | Original game, online via **Insignia** | **Live campaign**, run by `sbcampaign` |
+| **Steelbound** | Original game in a compatibility layer on PC | Free play via steelnet (lobbies, relays, accounts); no campaign yet |
+| **Project Brainbox** | Native PC port: new engine plus tools that convert the game's assets | In development |
 | Future clients and services | Web stats, Discord bot, tools | — |
 
 **steelcore makes all of them take part in one shared campaign.** A player on Steelbound and a player on Insignia fight for their factions in the same war, on the same leaderboards, in the same rounds and turns.
@@ -28,15 +28,34 @@ There will soon be several ways to play Line of Contact online:
 - Players move between clients (Xbox today, PC tomorrow). Their pilot and garage should move with them.
 - One set of campaign rules, one clock and one moderation team instead of several drifting copies.
 
+### What already exists
+
+steelcore does not start from zero. The hardest parts of an LoC campaign revival have already been built, and the campaign is running:
+
+| Piece | Status | Where | Role in steelcore |
+|---|---|---|---|
+| **LoC campaign protocol**, decoded: 36 commands across war status, missions, pilots, garage, shop, leaderboards, awards, trading and messages | ✅ running | `sbcampaign` | Spoken by the Insignia gateway, and by the Steelbound gateway if the protocol code can be shared |
+| **Campaign rules:** points per turn and round, award VTs per faction, award rankings in four categories, shop stock with random drops, faction resets | ✅ running | `sbcampaign` | Become the core's domain logic |
+| **Campaign clock:** weekly turns, rounds, restocking, awards | ✅ running | `sbcampaign` | Becomes the core's single clock |
+| **Data model** in PostgreSQL: accounts, pilots, garage, awards, leaderboards, shop, campaign periods | ✅ running | `sbcampaign` | Kept, extended by players and identities |
+| **Import of earlier campaign data** | ✅ exists | `sbcampaign` | History carries over |
+| **Live campaign on Insignia**, with English and Japanese players | ✅ running | Insignia + `sbcampaign` | The first provider, unchanged for players |
+| **Native PC port and asset tools** | 🚧 in development | Project Brainbox | A future provider |
+| **PC client with online play, accounts and relays** | ✅ running | Steelbound + steelnet | A future provider |
+
+**New in steelcore** are only the parts that sharing requires: the identity and linking layer, the Core API in front of the existing logic, per-provider trust and auditing, and a read API with events. In other words, steelcore mostly **moves proven campaign logic behind an API** and adds shared identities. The overview below marks every part accordingly.
+
 ---
 
 ## 2. Architecture at a glance
 
 ![steelcore overview](diagrams/overview.svg)
 
+Green marks what runs today, amber what is being built, grey what steelcore adds.
+
 Four layers, from the bottom up:
 
-1. **steelcore (Campaign Core):** the only component that holds campaign state and enforces rules. It owns the database and the campaign clock and offers a versioned **Core API**.
+1. **steelcore (Campaign Core):** the only component that holds campaign state and enforces rules. It owns the database and the campaign clock and offers a versioned **Core API**. Its campaign logic, clock and schema are the ones `sbcampaign` already runs.
 2. **Identity & accounts (part of the core):** maps every provider account to one **campaign player**.
 3. **Provider gateways:** one per provider (Insignia, Steelbound, Brainbox). A gateway authenticates its own users, speaks whatever protocol its client needs and calls the Core API. The provider runs it.
 4. **Games and services:** the clients players actually use, plus read-only consumers such as a stats website.
@@ -47,7 +66,9 @@ Four layers, from the bottom up:
 
 ## 3. Domain model
 
-The core keeps the campaign concepts LoC already has. `sbcampaign` shows them clearly. The one new idea is that the **player**, not the provider account, becomes the owner of everything.
+The core keeps the data model that `sbcampaign` already runs in production: pilots, garage, awards, leaderboards, shop and campaign periods. The one new idea is that the **player**, not the provider account, becomes the owner of everything.
+
+**New in this diagram:** `PROVIDER`, `PLAYER`, `IDENTITY` and the `identity_id` column on leaderboard entries. Everything else exists in `sbcampaign` today, with the XUID as its key.
 
 ```mermaid
 erDiagram
@@ -144,7 +165,7 @@ sequenceDiagram
     autonumber
     actor P as Player
     participant X as Original Xbox (LoC)
-    participant IG as Insignia gateway
+    participant IG as Insignia gateway (today sbcampaign)
     participant C as steelcore
     participant SG as Steelbound gateway
     participant L as Steelbound launcher
@@ -189,7 +210,7 @@ Linking an identity to a player that already has progress needs clear rules, oth
 
 ## 5. Core API
 
-A versioned API (`steelcore.v1`) that mirrors the command groups the original campaign protocol already has. Gateways translate one-to-one. Proposed transport: **gRPC** (typed contracts, server-to-server streaming for events), plus an optional read-only HTTP/JSON API for websites and bots.
+A versioned API (`steelcore.v1`) that mirrors the command groups of the original campaign protocol, as `sbcampaign` has already decoded and implemented them. Each call below has a working counterpart there today. Gateways translate one-to-one. Proposed transport: **gRPC** (typed contracts, server-to-server streaming for events), plus an optional read-only HTTP/JSON API for websites and bots.
 
 | Group | Calls (sketch) | Used by |
 |---|---|---|
@@ -223,7 +244,7 @@ In LoC the **client reports its own results** (`AddUserPoint`, `AddMissionPoint`
 
 ## 7. Campaign clock
 
-There is exactly **one** campaign clock, in the core ([ADR-0004](adr/0004-single-campaign-clock.md)). It does what `sbcampaign`'s service task does today:
+There is exactly **one** campaign clock, in the core ([ADR-0004](adr/0004-single-campaign-clock.md)). It is not new: `sbcampaign`'s service task already runs this cycle every week, and steelcore takes it over as it is:
 
 ```mermaid
 stateDiagram-v2
@@ -236,22 +257,22 @@ stateDiagram-v2
     RoundEnd --> TurnRunning: round awards, faction reset,<br/>round+1, turn 1
 ```
 
-Every transition is published as an **event**, so gateways can refresh caches and a Discord bot can announce "Round 4, Turn 1 has started". The campaign rules (points per turn and round, award VTs per faction, shop drops) live in **one versioned configuration** in the core.
+New in steelcore is only that every transition is published as an **event**, so gateways can refresh caches and a Discord bot can announce "Round 4, Turn 1 has started". The campaign rules (points per turn and round, award VTs per faction, shop drops) already live in one configuration file in `sbcampaign`. steelcore keeps that file and adds versioning, so rule changes take effect at a turn boundary.
 
 ---
 
 ## 8. Provider gateways
 
-| Gateway | Client protocol | Authentication | Operated by |
-|---|---|---|---|
-| **Insignia** | Original LoC campaign protocol (TCP) | Insignia authenticates the connection; the game reports its XUID (see [4.1](#41-link-code-default)) | Insignia campaign maintainer |
-| **Steelbound** | Original LoC campaign protocol, redirected to steelnet (Steelbound's online service) | steelnet account, verified by challenge-response (see [8.1](#81-example-the-steelbound-gateway-inside-steelnet)) | Steelbound |
-| **Brainbox** | Its choice: original protocol or a modern API | Brainbox account | Brainbox |
-| **Read API** | HTTP/JSON, read-only | none or API key | core operator |
+| Gateway | Status | Client protocol | Authentication | Operated by |
+|---|---|---|---|---|
+| **Insignia** | ✅ exists today as `sbcampaign`; only its storage layer changes to the Core API | Original LoC campaign protocol (TCP) | Insignia authenticates the connection; the game reports its XUID (see [4.1](#41-link-code-default)) | Insignia campaign maintainer |
+| **Steelbound** | new, part of steelnet | Original LoC campaign protocol, redirected to steelnet (Steelbound's online service) | steelnet account, verified by challenge-response (see [8.1](#81-example-the-steelbound-gateway-inside-steelnet)) | Steelbound |
+| **Brainbox** | new, with the port | Its choice: original protocol or a modern API | Brainbox account | Brainbox |
+| **Read API** | new | HTTP/JSON, read-only | none or API key | core operator |
 
 Notes:
 
-- The Insignia and Steelbound gateways speak the **same legacy protocol**. A shared protocol library (codec plus command types) would save both sides work. Whether and how that's possible depends on licensing, see [open questions](open-questions.md).
+- The Insignia and Steelbound gateways speak the **same legacy protocol**, which `sbcampaign` has already decoded completely. A shared protocol library (codec plus command types) based on that work would save both sides a lot of effort. Whether and how that's possible depends on licensing, see [open questions](open-questions.md).
 - The original game expects an **XUID** in places, even when it runs outside Xbox Live. Non-Insignia gateways hand the game a **stable, provider-scoped pseudo-XUID** from a reserved range that cannot collide with real XUIDs. The core never relies on it. Its key is always the `identity_id`.
 
 ### 8.1 Example: the Steelbound gateway inside steelnet
@@ -261,7 +282,7 @@ A gateway is not a separate platform. It is the piece of a provider's existing o
 | | Original Xbox | Steelbound |
 |---|---|---|
 | Network, accounts, sign-in | **Insignia** | **steelnet** (exists today) |
-| Speaks the campaign protocol with the game | `sbcampaign`, which becomes the Insignia gateway | **Steelbound gateway**, a new part of steelnet |
+| Speaks the campaign protocol with the game | `sbcampaign` (exists, live), which becomes the Insignia gateway | **Steelbound gateway**, a new part of steelnet |
 | Shared campaign state | steelcore | steelcore |
 
 **What steelnet already provides:** lobbies, NAT traversal help and relays for Steelbound's peer-to-peer matches, plus **pilot accounts**. Each account has an id and a unique pilot name and can be secured with Discord or a login. The game itself only receives a short-lived game key, never the account key, and signs in by challenge-response. So steelnet already is Steelbound's **identity provider**. In steelcore a Steelbound player is simply the identity `(steelbound, <steelnet account id>)`.
@@ -290,7 +311,7 @@ sequenceDiagram
 ```
 
 1. Steelbound redirects the game's campaign connection to the gateway. The connection is encrypted and signed in with the game key the launcher already hands out.
-2. The gateway speaks the **original LoC campaign protocol** with the game, the same protocol `sbcampaign` speaks on Insignia.
+2. The gateway speaks the **original LoC campaign protocol** with the game, the same protocol `sbcampaign` already decoded and speaks on Insignia.
 3. For every command it calls the **Core API** with its own gateway credentials, acting for the signed-in account.
 4. It **ignores the XUID the game reports.** The game gets a stable pseudo-XUID derived from the account.
 
@@ -334,16 +355,19 @@ Options range from "an existing campaign database becomes the core" to "shared, 
 
 ```mermaid
 flowchart LR
-    P0["<b>Phase 0 – today</b><br/>sbcampaign:<br/>protocol + rules + DB<br/>Insignia only"]
+    P0["<b>Phase 0 – done ✅</b><br/>sbcampaign runs the live campaign:<br/>protocol decoded, rules, clock,<br/>database, data import"]
     P1["<b>Phase 1 – identities</b><br/>add players + identities<br/>existing UUID = player_id<br/>nothing else changes"]
-    P2["<b>Phase 2 – core extracted</b><br/>rules + clock move into steelcore<br/>sbcampaign becomes the<br/>Insignia gateway"]
+    P2["<b>Phase 2 – core extracted</b><br/>existing rules + clock move<br/>behind the Core API,<br/>sbcampaign becomes the<br/>Insignia gateway"]
     P3["<b>Phase 3 – more clients</b><br/>Steelbound + Brainbox gateways<br/>link codes live"]
     P4["<b>Phase 4 – services</b><br/>read API, stats website,<br/>Discord events"]
     P0 --> P1 --> P2 --> P3 --> P4
+    classDef done fill:#dcf3e6,stroke:#2f8f5b,color:#1b2230
+    class P0 done
 ```
 
+- **Phase 0 is already done**, and it was the largest step: decoding the campaign protocol, rebuilding the campaign rules and running a live campaign. Everything after it builds on that.
 - **Phase 1** is small and safe. It is a schema addition with a backfill, and existing gateways keep working.
-- **Phase 2** is the real work. Domain logic is pulled out of the protocol server, and both sides are tested against the same campaign replays.
+- **Phase 2** is mostly restructuring, not new logic. The existing domain logic is separated from the protocol server, and both are tested against the same campaign replays.
 - Each phase can be released and rolled back on its own.
 
 ---
@@ -360,11 +384,11 @@ The design starts with **one LoC campaign**, but no table assumes that:
 
 ## 13. Next steps
 
-1. Discuss this draft with the Insignia campaign maintainer and agree on the [open questions](open-questions.md).
+1. Discuss this draft with the Insignia campaign maintainer, whose campaign server it builds on, and agree on the [open questions](open-questions.md).
 2. Agree on the identity schema (Phase 1) and the `steelcore.v1` API contract.
 3. Decide on operations and the shared protocol library.
 4. Build a prototype core against a copy of the campaign data. Only cleaned or synthetic test data, never real player data in the repository.
 
 ---
 
-*steelcore is a community project for game preservation. It is not affiliated with Microsoft, Capcom or the Insignia project. Line of Contact and Steel Battalion are trademarks of their respective owners. This concept builds on what `sbcampaign` showed about the LoC campaign. It contains no code from it.*
+*steelcore is a community project for game preservation. It is not affiliated with Microsoft, Capcom or the Insignia project. Line of Contact and Steel Battalion are trademarks of their respective owners. This concept builds directly on the work behind `sbcampaign`: decoding the LoC campaign protocol, rebuilding the campaign rules and running the revived campaign on Insignia. Without that work there would be nothing to share. This repository contains no code from it.*
