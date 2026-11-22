@@ -162,7 +162,9 @@ sequenceDiagram
     SG-->>L: Done, same pilot on both clients
 ```
 
-**Why the message of the day:** the original game has no field for typing a code, but it asks the server for a free-form message every session. The Insignia gateway knows which XUID is asking, so it can show a personal code. Only someone signed in to that Insignia account can see it. *(To verify: the message length and that it is fetched every session.)*
+**Why the message of the day:** the original game has no field for typing a code, but it asks the server for a free-form message (`FreeMessage`) on the same connection, after the XUID handshake. So the gateway already knows which XUID is asking and can return a personal code instead of the shared text. The message is UTF-16 with a 16-bit length field, and multi-line text already works. *(To verify on real hardware: how much text is visible, and whether it is fetched every time the campaign menu opens.)*
+
+**How strong is this proof?** Exactly as strong as the XUID itself. In the current campaign protocol, **the game reports its own XUID** and the server accepts it. Insignia authenticates the console's connection, but it is not yet clear whether the campaign server can confirm *which* user is connected. If it cannot, a modified console could claim another player's XUID and see their link code. That is not a new risk: the same spoof would already let someone play another player's pilot today. Linking is therefore as safe as the existing campaign, and every link can be reverted by an admin. If Insignia can pass the authenticated identity to the gateway, both problems go away ([open questions](open-questions.md#identity-and-linking)).
 
 The reverse direction works too. Any client with its own UI (Steelbound launcher, Brainbox, a web portal) can **show** a code that is then redeemed from another client that has a text field.
 
@@ -242,7 +244,7 @@ Every transition is published as an **event**, so gateways can refresh caches an
 
 | Gateway | Client protocol | Authentication | Operated by |
 |---|---|---|---|
-| **Insignia** | Original LoC campaign protocol (TCP) | Insignia session gives the XUID | Insignia campaign maintainer |
+| **Insignia** | Original LoC campaign protocol (TCP) | Insignia authenticates the connection; the game reports its XUID (see [4.1](#41-link-code-default)) | Insignia campaign maintainer |
 | **Steelbound** | Original LoC campaign protocol, redirected to the Steelbound online service | Steelbound account token | Steelbound |
 | **Brainbox** | Its choice: original protocol or a modern API | Brainbox account | Brainbox |
 | **Read API** | HTTP/JSON, read-only | none or API key | core operator |

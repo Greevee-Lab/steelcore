@@ -21,7 +21,8 @@ Three ways, in this order:
 - **+** Ownership of both accounts is proven, no passwords are shared, and providers keep their own authentication.
 - **+** Works for the original game even though it has no text input.
 - **−** Needs a small UI on providers that have one (launcher, port, web portal).
-- **−** The message-of-the-day approach still has to be verified on the real client (length, fetched every session).
+- **−** The message-of-the-day approach still has to be verified on the real client (visible length, fetched every session).
+- **−** On the Insignia side the proof is only as strong as the XUID the game reports. Unless Insignia can confirm the connected user to the gateway, a modified console could claim another XUID. This is the same risk the existing campaign already has, and links can be reverted by an admin.
 
 ## Alternatives considered
 

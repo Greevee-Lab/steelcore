@@ -16,19 +16,20 @@ Things to settle between the maintainers before building. Each answer will becom
 
 ## Identity and linking
 
-7. **Message-of-the-day link codes:** is the free message fetched every session, and how many characters fit?
-8. **Insignia:** does Insignia offer any account verification or OAuth that a gateway could use?
-9. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients so it can never collide with real XUIDs?
-10. **Pilot names:** how are existing duplicate pilot names (if any) resolved when names become unique campaign-wide?
+7. **Message-of-the-day link codes:** how much of the free message is visible on screen, and is it fetched every time the campaign menu opens?
+8. **Authenticated XUID:** the game reports its own XUID. Can Insignia confirm to the campaign server which user is actually connected (for example via connection metadata), so a modified console cannot claim someone else's XUID?
+9. **Insignia's consent:** is the Insignia project fine with linking Insignia XUIDs to accounts at other services, and with an Insignia campaign that is shared with PC clients? Does Insignia offer account verification or OAuth that a gateway could use?
+10. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients so it can never collide with real XUIDs?
+11. **Pilot names:** how are existing duplicate pilot names (if any) resolved when names become unique campaign-wide?
 
 ## Game data
 
-11. **Pilot blob:** is the format identical across US, EU and JP versions? Which fields would a native port need to produce?
-12. **Stats:** what do `stat1`–`stat10` mean exactly? Plausibility checks need real limits per mission.
-13. **Trust:** which reported values can a malicious client inflate, and which can be cross-checked (for example both teams reporting the same match)?
+12. **Pilot blob:** is the format identical across US, EU and JP versions? Which fields would a native port need to produce?
+13. **Stats:** what do `stat1`–`stat10` mean exactly? Plausibility checks need real limits per mission.
+14. **Trust:** which reported values can a malicious client inflate, and which can be cross-checked (for example both teams reporting the same match)?
 
 ## Technology
 
-14. **API transport:** gRPC (proposed) or HTTP/JSON with OpenAPI for gateways?
-15. **Language:** the core in Rust (matches the existing server and makes reuse easy), or another language?
-16. **Events:** gRPC streams, webhooks, or PostgreSQL `LISTEN/NOTIFY` behind the API?
+15. **API transport:** gRPC (proposed) or HTTP/JSON with OpenAPI for gateways?
+16. **Language:** the core in Rust (matches the existing server and makes reuse easy), or another language?
+17. **Events:** gRPC streams, webhooks, or PostgreSQL `LISTEN/NOTIFY` behind the API?
