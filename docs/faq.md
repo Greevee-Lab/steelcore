@@ -15,7 +15,7 @@ The hard part already exists and runs: the decoded protocol, the rules, the cloc
 3. New parts go into separate modules next to the original code, which stays as intact as possible.
 4. Upstream changes are merged regularly, and general fixes go back as pull requests.
 
-If the author prefers, the new parts can go straight into `sbcampaign` instead. Details: [concept 4.1](concept.md#41-how-the-fork-works).
+Details: [concept 4.1](concept.md#41-how-the-fork-works).
 
 ### Where would it run, and who runs it?
 
@@ -29,11 +29,11 @@ No, it is a working title. Name and license are agreed with the `sbcampaign` aut
 
 ### Does Insignia have to take part?
 
-No. Steelbound connects first, and the Insignia campaign keeps running as it is. Connecting it later is technically possible: `sbcampaign` could act as the Insignia gateway and call the Core API instead of its own database. Two things are open: whether the server can confirm which user is connected (the game reports its own XUID), and whether the Insignia project agrees. See [concept 6.1](concept.md#61-link-code-default).
+No. A Steelbound connection is being evaluated as part of its current development, and the Insignia campaign keeps running as it is. Connecting it later is technically possible: `sbcampaign` could act as the Insignia gateway and call the Core API instead of its own database. Two things are open: whether the server can confirm which user is connected (the game reports its own XUID), and whether the Insignia project agrees. See [concept 6.1](concept.md#61-link-code-default).
 
 ### How do the Steelbound gateway and steelnet relate?
 
-steelnet is to Steelbound what Insignia is to the original Xbox: network, accounts and sign-in. The gateway is a new part of steelnet that speaks the campaign protocol with the game and calls the Core API. See [concept 8.1](concept.md#81-the-steelbound-gateway-inside-steelnet).
+steelnet is to Steelbound what Insignia is to the original Xbox: network, accounts and sign-in. The gateway being evaluated would be a new part of steelnet that speaks the campaign protocol with the game and calls the Core API. See [concept 8.1](concept.md#81-the-steelbound-gateway-inside-steelnet).
 
 ### Why not just share one database between all servers?
 

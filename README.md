@@ -10,7 +10,7 @@ A proposed campaign service for *Steel Battalion: Line of Contact*. Players on t
 
 - **Built on what already runs.** `sbcampaign` has decoded the campaign protocol, rebuilt the rules, clock and database, and runs a live campaign on Insignia. steelcore would be a **fork** of it, made only with its author's agreement and a license.
 - **Small additions:** player identities and account linking, one Core API in front of the existing logic, per-provider trust, and gateways.
-- **Steelbound connects first.** The Insignia campaign keeps running as it is. Connecting it, or a native port, is a later option.
+- **Steelbound connection under evaluation,** as part of its current development. The Insignia campaign keeps running as it is. Connecting it, or a native port, is a later option.
 - **Gateways never touch the database.** Rules, clock and anti-cheat live in one place.
 
 ## Status

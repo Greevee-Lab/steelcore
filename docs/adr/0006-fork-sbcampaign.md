@@ -24,5 +24,4 @@
 
 ## Alternatives
 
-- **Contribute directly to `sbcampaign`:** a good option if the author prefers it. This repository would then only keep the concept.
 - **Clean rewrite:** independent of any license, but it repeats work that already exists.

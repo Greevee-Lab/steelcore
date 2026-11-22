@@ -4,7 +4,7 @@ To settle between the maintainers before building. Each answer becomes an ADR. A
 
 ## Fork and operations
 
-1. **Fork and license:** is the `sbcampaign` author fine with a fork? Which license, and which name? Or should the new parts go straight into `sbcampaign`?
+1. **Fork and license:** is the `sbcampaign` author fine with a fork? Which license, and which name?
 2. **Sync:** how do fork and upstream exchange fixes (pull requests, regular merges, a shared branch)?
 3. **Server:** who holds backups and production access on the proposed dedicated server?
 4. **Moderation:** who are the campaign admins, and how are merges, voiding and bans logged and reviewed?

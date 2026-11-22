@@ -6,7 +6,7 @@
 
 - **One campaign for every client.** Original Xbox, Steelbound and future clients fight in the same war. **Not crossplay:** matches stay on each platform, only campaign progress is shared.
 - **Built on what already runs.** `sbcampaign` has decoded the campaign protocol and runs a live campaign. steelcore would be a **fork** of it, made only with its author's agreement and a license.
-- **Steelbound connects first.** The Insignia campaign keeps running as it is. Connecting it, or a native port, is a **later option**, not a requirement.
+- **Steelbound connection under evaluation.** Connecting Steelbound is being evaluated as part of its current development. The Insignia campaign keeps running as it is. Connecting it, or a native port, is a **later option**, not a requirement.
 - **What's new is small:** player identities and account linking, one Core API in front of the existing logic, per-provider trust, and the Steelbound gateway.
 
 ---
@@ -50,21 +50,21 @@ In other words: steelcore mostly **moves proven campaign logic behind an API** a
 
 1. **Core:** the only component that holds campaign state. It owns the database and the clock and offers the **Core API**. Its logic, clock and schema come from `sbcampaign`.
 2. **Identity & accounts** (inside the core): map every provider account to one campaign **player**.
-3. **Gateways:** one per provider. Each authenticates its own users, speaks its client's protocol and calls the Core API. Steelbound's comes first.
+3. **Gateways:** one per provider. Each authenticates its own users, speaks its client's protocol and calls the Core API. A Steelbound gateway is being evaluated.
 4. **Clients and services:** the games, plus read-only consumers like a stats site.
 
 **Core rule:** gateways never touch the database, only the Core API. That keeps rules, anti-cheat, audit and the clock in one place ([ADR-0001](adr/0001-core-api-only.md)).
 
 ---
 
-## 4. The plan: fork first, Steelbound first
+## 4. The plan: fork, then evaluate Steelbound
 
 ```mermaid
 flowchart LR
     P0["<b>0 · done ✅</b><br/>sbcampaign runs<br/>the live campaign"]
     P1["<b>1 · fork</b><br/>with the author's OK<br/>and a license"]
     P2["<b>2 · core</b><br/>identities + Core API<br/>around existing logic"]
-    P3["<b>3 · Steelbound</b><br/>gateway in steelnet,<br/>campaign goes live"]
+    P3["<b>3 · Steelbound</b><br/>evaluate a gateway<br/>in steelnet"]
     P4["<b>4 · options</b><br/>Insignia, Brainbox,<br/>link codes, read API"]
     P0 --> P1 --> P2 --> P3 --> P4
     classDef done fill:#dcf3e6,stroke:#2f8f5b,color:#1b2230
@@ -83,7 +83,7 @@ Phase 0 was the hardest part, and it is already done. Each later phase can be re
 2. **Fork:** a real GitHub fork. It keeps the full history and the visible "forked from" link, so credit stays with the original.
 3. **Add, don't rewrite:** the original code stays as intact as possible. Identities, Core API and the gateway are added as separate modules next to it.
 4. **Stay in sync:** upstream changes are merged regularly (`git fetch upstream`, `git merge upstream/main`), and general fixes go back upstream as pull requests.
-5. **Name and home** are agreed with the author. "steelcore" is a working title. If the author prefers, the new parts can go straight into `sbcampaign` instead of a fork.
+5. **Name and home** are agreed with the author. "steelcore" is a working title.
 
 ### 4.2 Where it runs
 
@@ -214,14 +214,14 @@ Every call carries the gateway's credentials (mTLS), the identity it acts for an
 
 | Gateway | Status | Sign-in |
 |---|---|---|
-| **Steelbound** | 🆕 first, part of steelnet | steelnet account, challenge-response |
+| **Steelbound** | 🆕 under evaluation, part of steelnet | steelnet account, challenge-response |
 | **Insignia** | ⏳ future option, if agreed; `sbcampaign` itself could act as the gateway | Insignia connection, the game reports its XUID |
 | **Brainbox** | ⏳ future option | its own accounts |
 | **Read API** | 🆕 | none or API key |
 
 ### 8.1 The Steelbound gateway inside steelnet
 
-steelnet is to Steelbound what Insignia is to the Xbox. It already has accounts, a cryptographic sign-in, lobbies and relays. The gateway is **a new part of steelnet**, built on the protocol code from the fork:
+steelnet is to Steelbound what Insignia is to the Xbox. It already has accounts, a cryptographic sign-in, lobbies and relays. The gateway being evaluated would be **a new part of steelnet**, built on the protocol code from the fork:
 
 ```mermaid
 sequenceDiagram
@@ -294,7 +294,7 @@ Proposed setup: see [4.2](#42-where-it-runs). Whatever the setup, the requiremen
 1. Ask the author of `sbcampaign` about the fork, a license and the name. Agree on the [open questions](open-questions.md).
 2. Set up the fork and the server.
 3. Agree on the identity schema and the `steelcore.v1` API.
-4. Build a prototype core and the Steelbound gateway. Test it only with cleaned or synthetic data, never with real player data.
+4. Build a prototype core and evaluate the Steelbound gateway. Test it only with cleaned or synthetic data, never with real player data.
 
 ---
 

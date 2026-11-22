@@ -83,7 +83,7 @@ add('<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" 
     '<marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="aht"/></marker></defs>')
 add(f'<rect class="bg" x="0" y="0" width="{W}" height="{H}" rx="16"/>')
 add('<text class="h" x="40" y="48">steelcore: one campaign, many clients</text>')
-add('<text class="sub" x="40" y="72">Built on a fork of the existing campaign server. Steelbound connects first, other clients can join later.</text>')
+add('<text class="sub" x="40" y="72">Built on a fork of the existing campaign server. A Steelbound connection is being evaluated, other clients can join later.</text>')
 
 cols = [40, 326, 612, 898]
 cw = [260, 260, 260, 262]
@@ -101,7 +101,7 @@ for (acc, t, s, st), x, w in zip(b1, cols, cw):
 # band 2: gateways
 add('<rect class="band" x="24" y="246" width="1152" height="152" rx="12"/>')
 add('<text class="lbl" x="40" y="268">PROVIDER GATEWAYS</text>')
-b2 = [("stb", "Steelbound gateway", ["first gateway, part of steelnet", "legacy LoC protocol · account"], ("new", "NEW")),
+b2 = [("stb", "Steelbound gateway", ["under evaluation, part of steelnet", "legacy LoC protocol · account"], ("new", "NEW")),
       ("brx", "Brainbox gateway", ["possible later, with the port", "protocol of its choice"], ("fut", "FUTURE OPTION")),
       ("ins", "Insignia gateway", ["possible later, if agreed", "e.g. via the sbcampaign server"], ("fut", "FUTURE OPTION")),
       ("svc", "Read API", ["HTTP/JSON, read-only", "scope: read:public"], ("new", "NEW"))]
