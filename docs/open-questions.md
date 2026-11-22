@@ -1,6 +1,6 @@
 # Open questions
 
-Things to settle between the maintainers before building. Each answer will become an ADR.
+Things to settle between the maintainers before building. Each answer will become an ADR. Questions that already have an answer are in the [FAQ](faq.md).
 
 ## Operations and governance
 

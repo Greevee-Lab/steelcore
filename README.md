@@ -18,6 +18,7 @@ It is **not** crossplay. Matches stay on each platform. Only campaign progress i
 |---|---|
 | [Concept](docs/concept.md) | Goal, architecture, domain model, account linking, Core API, trust, clock, migration path |
 | [Decisions (ADRs)](docs/adr/README.md) | Proposed and accepted architecture decisions |
+| [FAQ](docs/faq.md) | Short answers to questions that came up, for maintainers and players |
 | [Open questions](docs/open-questions.md) | What we still need to decide together |
 
 ## The idea in five sentences

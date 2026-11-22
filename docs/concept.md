@@ -3,7 +3,7 @@
 **Status:** Draft concept for discussion · **Scope:** Line of Contact (LoC) online campaign
 **Audience:** maintainers of LoC campaign servers, game clients and community services
 
-> This is a proposal, not a finished design. Every decision below is open for discussion. Decisions that are already proposed are recorded as [ADRs](adr/).
+> This is a proposal, not a finished design. Every decision below is open for discussion. Decisions that are already proposed are recorded as [ADRs](adr/). Short answers to common questions are in the [FAQ](faq.md).
 
 ---
 
