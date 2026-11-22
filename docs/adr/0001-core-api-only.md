@@ -16,7 +16,7 @@ Only steelcore talks to the database. Every provider gateway uses the versioned 
 - **+** The schema can change without coordinating every provider. Only the API contract is stable.
 - **+** Per-provider rate limits, trust levels and voiding become possible.
 - **−** An extra network hop and one more service to run.
-- **−** The existing campaign server has to be split into a protocol part (gateway) and a rules part (core). See the migration path in the [concept](../concept.md#11-migration-path).
+- **−** The existing campaign server has to be split into a protocol part (gateway) and a rules part (core). See the migration path in the [concept](../concept.md#4-the-plan-fork-first-steelbound-first).
 
 ## Alternatives considered
 

@@ -2,48 +2,39 @@
 
 **One Line of Contact campaign for every client.**
 
-steelcore is a proposed campaign service for *Steel Battalion: Line of Contact*. Its goal is that players on the original Xbox (via Insignia), on Steelbound, on a native PC port and on future clients all fight in **one shared campaign**: the same war, rounds and turns, leaderboards, awards, garage and shop.
-
-It is **not** crossplay. Matches stay on each platform. Only campaign progress is shared.
+A proposed campaign service for *Steel Battalion: Line of Contact*. Players on the original Xbox, on Steelbound and on future clients fight in **one shared campaign**: same war, rounds, leaderboards, awards, garage and shop. **Not crossplay:** matches stay on each platform, only campaign progress is shared.
 
 ![steelcore overview](docs/diagrams/overview.svg)
 
-## Built on what already runs
+## The idea
 
-The LoC campaign is already back. `sbcampaign` has decoded the campaign protocol, rebuilt the campaign rules, clock and database, and runs a live campaign on Insignia. steelcore does not replace that work. The proposal is to build on a **fork of `sbcampaign`** (only with its author's agreement), **move that proven campaign logic behind one API** and add what sharing needs: identities, account linking, per-provider trust and a read API.
-
-**Steelbound connects first.** The Insignia campaign keeps running as it is; connecting it later is an option, not a requirement. The overview marks every part as *exists*, *in development*, *new* or *future option*.
+- **Built on what already runs.** `sbcampaign` has decoded the campaign protocol, rebuilt the rules, clock and database, and runs a live campaign on Insignia. steelcore would be a **fork** of it, made only with its author's agreement and a license.
+- **Small additions:** player identities and account linking, one Core API in front of the existing logic, per-provider trust, and gateways.
+- **Steelbound connects first.** The Insignia campaign keeps running as it is. Connecting it, or a native port, is a later option.
+- **Gateways never touch the database.** Rules, clock and anti-cheat live in one place.
 
 ## Status
 
-**Concept / draft for discussion.** steelcore itself has no code yet. We want to agree on the architecture with the people who run LoC campaign servers and build LoC clients first.
+**Concept for discussion.** No code yet. "steelcore" is a working title. Name, license and fork are agreed with the `sbcampaign` author first.
 
 ## Documents
 
 | Document | What's in it |
 |---|---|
-| [Concept](docs/concept.md) | Goal, architecture, domain model, account linking, Core API, trust, clock, migration path |
-| [Decisions (ADRs)](docs/adr/README.md) | Proposed and accepted architecture decisions |
-| [FAQ](docs/faq.md) | Short answers to questions that came up, for maintainers and players |
+| [Concept](docs/concept.md) | What exists, architecture, the fork plan, identities, linking, API, gateways |
+| [FAQ](docs/faq.md) | Short answers for maintainers and players |
+| [Decisions (ADRs)](docs/adr/README.md) | Proposed and accepted decisions |
 | [Open questions](docs/open-questions.md) | What we still need to decide together |
-
-## The idea in five sentences
-
-1. **steelcore** owns the campaign database and the campaign clock, and is the only component that touches campaign data.
-2. Every provider runs a **gateway** that authenticates its own users and talks to steelcore through a versioned **Core API**. Steelbound comes first; Insignia, Brainbox and others can follow.
-3. Every provider account is an **identity** that belongs to one campaign **player**. Pilot, garage and stats belong to the player.
-4. Players can **link** accounts from different providers with a short-lived code, so the same pilot works on every client.
-5. The core keeps the existing data model and keys, so campaigns can be joined later step by step.
 
 ## Contributing
 
-Comments and ideas are welcome. Please open an issue or a discussion. For bigger changes, propose an ADR.
+Ideas are welcome: open an issue or a discussion, or propose an ADR for bigger changes.
 
-Please **never** put real player data (XUIDs, account names, pilot data, IP addresses) into issues, examples or tests. Use made-up or cleaned data only.
+**Never** put real player data (XUIDs, account names, pilot data, IP addresses) into issues, examples or tests. Use made-up or cleaned data only.
 
 ## License
 
-[AGPL-3.0](LICENSE). Gateways connect over the network API and can use their own license.
+[AGPL-3.0](LICENSE) for this concept. Gateways connect over the network API and can use their own license.
 
 ---
 

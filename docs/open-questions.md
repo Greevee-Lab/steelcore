@@ -1,36 +1,33 @@
 # Open questions
 
-Things to settle between the maintainers before building. Each answer will become an ADR. Questions that already have an answer are in the [FAQ](faq.md).
+To settle between the maintainers before building. Each answer becomes an ADR. Answered questions are in the [FAQ](faq.md).
 
-## Operations and governance
+## Fork and operations
 
-1. **Who runs the core?** Proposed: a small dedicated server with equal admin access for the maintainers involved. Who holds backups and production access?
-2. **Campaign admins:** who moderates (merges, voiding, bans), and how are decisions logged and reviewed?
-3. **Release process:** how are API changes and rule changes agreed and rolled out?
-
-## Existing campaign
-
-4. **Fork and license:** is the `sbcampaign` author fine with a fork, and which license should `sbcampaign` get? Or would the author rather have the new parts contributed directly to `sbcampaign`?
-5. **Keeping in sync:** how do fork and upstream exchange fixes (pull requests, a shared branch, regular merges)?
-6. **Continuity:** does the Steelbound campaign start as a new season? And if the Insignia campaign is connected later, do they merge standings or start a joint new season?
+1. **Fork and license:** is the `sbcampaign` author fine with a fork? Which license, and which name? Or should the new parts go straight into `sbcampaign`?
+2. **Sync:** how do fork and upstream exchange fixes (pull requests, regular merges, a shared branch)?
+3. **Server:** who holds backups and production access on the proposed dedicated server?
+4. **Moderation:** who are the campaign admins, and how are merges, voiding and bans logged and reviewed?
+5. **Releases:** how are API and rule changes agreed and rolled out?
+6. **Continuity:** does the Steelbound campaign start as a new season? If Insignia connects later, are standings merged or does a joint season start?
 
 ## Identity and linking
 
-7. **Message-of-the-day link codes:** how much of the free message is visible on screen, and is it fetched every time the campaign menu opens?
-8. **Authenticated XUID:** the game reports its own XUID. Can Insignia confirm to the campaign server which user is actually connected (for example via connection metadata), so a modified console cannot claim someone else's XUID?
-9. **Insignia's consent:** is the Insignia project fine with linking Insignia XUIDs to accounts at other services, and with an Insignia campaign that is shared with PC clients? Does Insignia offer account verification or OAuth that a gateway could use?
-10. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients so it can never collide with real XUIDs?
-11. **Pilot names:** how are existing duplicate pilot names (if any) resolved when names become unique campaign-wide? And what happens when a provider's own account name (for example a steelnet pilot name) is already taken by a pilot from another provider?
-12. **Campaign server redirect:** how does the game find its campaign server address, and how should non-Xbox clients point it at their gateway?
+7. **Link code in the message of the day:** how much text is visible, and is it fetched every time the campaign menu opens?
+8. **Authenticated XUID:** can Insignia confirm to the campaign server which user is connected, so a modified console cannot claim someone else's XUID?
+9. **Insignia's consent:** is the Insignia project fine with linking XUIDs to other services and with a campaign shared with PC clients?
+10. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients?
+11. **Pilot names:** how are name clashes resolved, both existing duplicates and a steelnet name that is already taken?
+12. **Redirect:** how does the game find its campaign server, and how do non-Xbox clients point it at their gateway?
 
 ## Game data
 
-13. **Pilot blob:** is the format identical across US, EU and JP versions? Which fields would a native port need to produce?
-14. **Stats:** what do `stat1`–`stat10` mean exactly? Plausibility checks need real limits per mission.
-15. **Trust:** which reported values can a malicious client inflate, and which can be cross-checked (for example both teams reporting the same match)?
+13. **Pilot blob:** is the format the same in US, EU and JP? Which fields must a native port produce?
+14. **Stats:** what do `stat1`–`stat10` mean, and what are realistic limits per mission?
+15. **Trust:** which reported values can a client inflate, and which can be cross-checked (for example both teams reporting one match)?
 
 ## Technology
 
-16. **API transport:** gRPC (proposed) or HTTP/JSON with OpenAPI for gateways?
-17. **Language:** the core in Rust (matches the existing server and makes reuse easy), or another language?
+16. **Transport:** gRPC (proposed) or HTTP/JSON with OpenAPI?
+17. **Language:** stay with Rust like `sbcampaign` (easy reuse), or something else?
 18. **Events:** gRPC streams, webhooks, or PostgreSQL `LISTEN/NOTIFY` behind the API?

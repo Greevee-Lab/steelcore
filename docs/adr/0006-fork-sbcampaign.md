@@ -4,27 +4,25 @@
 
 ## Context
 
-`sbcampaign` already implements the LoC campaign: the decoded protocol, the campaign rules, the clock and the database, and it runs the live campaign on Insignia. Rewriting all of that would waste a lot of proven work and would likely introduce new bugs.
-
-`sbcampaign` currently has no license. Without one, the code may be viewed but not reused, so a fork needs the author's explicit agreement.
+`sbcampaign` already implements the LoC campaign (protocol, rules, clock, database) and runs it live on Insignia. Rewriting that would waste proven work. It has no license, so its code may be read but not reused without the author's agreement.
 
 ## Decision
 
-- Ask the author to add a license to `sbcampaign`. The author chooses which one. AGPL-3.0 or GPL-3.0 would match this project, and a permissive license works as well.
-- Create a **real GitHub fork**. It keeps the full commit history and the visible "forked from" link, so the original work stays credited automatically.
-- Keep the original code as intact as possible. New parts (identities, Core API, gateways) are added as separate modules next to it, which keeps upstream merges simple.
-- Pull upstream changes regularly (`git fetch upstream`, `git merge upstream/main`). General fixes go back upstream as pull requests.
-- The live Insignia campaign stays on the original server and is not affected by the fork.
+1. **License first.** The author adds a license of their choice. AGPL-3.0 or GPL-3.0 fit this project, and a permissive one works too.
+2. **Real GitHub fork.** It keeps the full history and the "forked from" link, so credit stays visible.
+3. **Additive changes.** The original code stays as intact as possible. Identities, Core API and gateway are added as separate modules.
+4. **Stay in sync.** `git remote add upstream <sbcampaign>`, then regularly `git fetch upstream` and `git merge upstream/main`. General fixes go back upstream as pull requests.
+5. **Insignia untouched.** The live campaign keeps running on the original server.
+6. **Name and home** of the fork are agreed with the author.
 
 ## Consequences
 
-- **+** Proven campaign logic from day one; the work goes into the new parts.
-- **+** Credit stays visible in the history and on GitHub.
-- **+** Upstream and fork can benefit from each other's fixes.
-- **−** Two code bases need syncing. Keeping our changes additive limits the effort.
-- **−** Nothing can start before the author agrees and adds a license.
+- **+** Proven campaign logic from day one. The work goes into the new parts.
+- **+** Credit stays visible, and fixes flow both ways.
+- **−** Two code bases have to stay in sync. Keeping our changes additive limits the effort.
+- **−** Nothing starts before the author agrees.
 
-## Alternatives considered
+## Alternatives
 
-- **Clean rewrite:** independent of the license, but repeats work that already exists and runs.
-- **Contribute directly to `sbcampaign`:** the friendliest option if the author prefers it. The new parts would then live in the original repository, and this repository would only keep the concept.
+- **Contribute directly to `sbcampaign`:** a good option if the author prefers it. This repository would then only keep the concept.
+- **Clean rewrite:** independent of any license, but it repeats work that already exists.
