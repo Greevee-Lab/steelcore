@@ -35,6 +35,10 @@ No. A Steelbound connection is being evaluated as part of its current developmen
 
 steelnet is to Steelbound what Insignia is to the original Xbox: network, accounts and sign-in. The gateway being evaluated would be a new part of steelnet that speaks the campaign protocol with the game and calls the Core API. See [concept 8.1](concept.md#81-the-steelbound-gateway-inside-steelnet).
 
+### Which XUID range do non-Xbox clients use?
+
+The game always reports a 64-bit XUID. Steelbound reports a **pseudo-XUID** `0x53424C01_nnnnnnnn`: the high word is "SBL" plus version 1, the low word is the Steelbound account id (1 to 2^32-1). Real XUIDs start with `0x0009` (online accounts) or `0xE000` (offline accounts), so the ranges never overlap. `0x53424C02` and up stay free for later identity kinds. The campaign derives the `player_id` from a pseudo-XUID exactly as from a real XUID, so pilot, garage and leaderboard work unchanged ([ADR-0002](adr/0002-player-id-from-existing-uuid.md)). An Insignia identity in the pseudo range is refused. Implemented in the fork: `sql/fork/identity.sql`, `src/campaign_core/identity.rs`.
+
 ### Why not just share one database between all servers?
 
 Every server would carry its own copy of the rules, and every schema change would break all of them at once. With one Core API, rules, clock, anti-cheat and audit stay in one place. See [ADR-0001](adr/0001-core-api-only.md).

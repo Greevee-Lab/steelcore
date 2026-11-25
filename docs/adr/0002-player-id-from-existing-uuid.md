@@ -10,7 +10,7 @@ The current LoC campaign database keys accounts, garage, awards and leaderboard 
 
 - Add a `players` table and an `identities` table (`provider`, `external_id` → `player_id`).
 - **Every existing account UUID is reused as its `player_id`.** Each existing account gets one identity `(insignia, <XUID>)`.
-- New players get a random UUID v4 (or v7) that cannot collide with the XUID-derived values.
+- New players of a provider with XUID-like ids get the same derivation: Steelbound maps its account id to the pseudo-XUID `0x53424C01_<account id>` and then to the UUID (see the [FAQ](../faq.md#which-xuid-range-do-non-xbox-clients-use)). Providers without such an id get a random UUID v4 (or v7) that cannot collide with the XUID-derived values.
 
 ## Consequences
 
@@ -21,3 +21,7 @@ The current LoC campaign database keys accounts, garage, awards and leaderboard 
 ## Alternatives considered
 
 - **New random player_id for everyone:** cleaner, but every foreign key has to be rewritten in one risky migration.
+
+## Implementation (2026-11-25)
+
+In the [fork](https://github.com/Greevee-Lab/sbcampaign): `sql/fork/identity.sql` adds `provider`, `player`, `identity` and `audit_log` without altering upstream tables and backfills existing accounts; `resolve_identity` in `src/campaign_core/identity.rs` creates player and identity on first contact. The Insignia provider is prepared and disabled.

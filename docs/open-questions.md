@@ -16,7 +16,7 @@ To settle between the maintainers before building. Each answer becomes an ADR. A
 7. **Link code in the message of the day:** how much text is visible, and is it fetched every time the campaign menu opens?
 8. **Authenticated XUID:** can Insignia confirm to the campaign server which user is connected, so a modified console cannot claim someone else's XUID?
 9. **Insignia's consent:** is the Insignia project fine with linking XUIDs to other services and with a campaign shared with PC clients?
-10. **Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients?
+10. ~~**Pseudo-XUIDs:** which 64-bit range is safe for non-Xbox clients?~~ Answered in the [FAQ](faq.md#which-xuid-range-do-non-xbox-clients-use).
 11. **Pilot names:** how are name clashes resolved, both existing duplicates and a steelnet name that is already taken?
 12. **Redirect:** how does the game find its campaign server, and how do non-Xbox clients point it at their gateway?
 
