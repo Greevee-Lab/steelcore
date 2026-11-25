@@ -10,3 +10,4 @@ Short records of important decisions: context, decision, consequences. New decis
 | [0004](0004-single-campaign-clock.md) | Exactly one campaign clock, inside the core | Proposed |
 | [0005](0005-license-agpl.md) | License steelcore under AGPL-3.0 | Accepted |
 | [0006](0006-fork-sbcampaign.md) | Build the core on a fork of sbcampaign | Proposed |
+| [0007](0007-core-api-binding.md) | Core API as Protobuf, served as gRPC and Connect-JSON over mutual TLS | Accepted |

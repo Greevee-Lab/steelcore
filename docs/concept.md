@@ -210,6 +210,10 @@ A versioned API (`steelcore.v1`) that mirrors the command groups `sbcampaign` al
 
 Every call carries the gateway's credentials (mTLS), the identity it acts for and, for writes, an idempotency key. **Scopes** limit each gateway, so a stats site can never write.
 
+**Status (2026-11-25):** the first part is implemented in the fork. The contract is defined in Protobuf ([`proto/steelcore/v1`](https://github.com/Greevee-Lab/sbcampaign/tree/master/proto/steelcore/v1)) and served on one mutual-TLS port in two equal bindings: gRPC and Connect-JSON (plain HTTPS with JSON). It covers `ResolveIdentity`, `GetPlayer`, `CheckDisplayName`, `SetDisplayName` and the admin call `SetIdentitySuspended`. The campaign commands stay in-process for now and follow as further services. See [ADR-0007](adr/0007-core-api-binding.md).
+
+**Display names** (gamertags) belong to the player in the core. They follow the classic gamertag rules (1–15 characters: letters, digits and single spaces). The core keeps them unique across all providers and also blocks look-alikes. A name can be changed once a week, and an old name stays reserved for its owner for a while.
+
 ## 8. Gateways
 
 | Gateway | Status | Sign-in |
@@ -248,6 +252,8 @@ sequenceDiagram
 - **Still open:** clashes between steelnet names and existing pilot names, and how the game is pointed at the gateway.
 
 Other providers follow the same pattern: keep your own accounts, add a gateway.
+
+**Every client talks to the core directly.** steelnet is the provider only for Steelbound: it signs in Steelbound players and carries their matches. Brainbox and Insignia never go through steelnet. Each connects to the Core API itself, with its own access (certificate, scopes, rate limit), and authenticates its own users. The core then knows each user as an identity of that provider. If a player plays on several clients, their identities are linked to one player ([section 6](#6-account-linking)).
 
 ---
 
